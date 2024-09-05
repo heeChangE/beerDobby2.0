@@ -91,9 +91,9 @@ const QuizPage = ({ welcome }) => {
 
     if (questionNumber === 0 || questionNumber === 1) {
       setTypeFirst(typeFirst + record);
-    } else if (questionNumber === 2 || questionNumber === 3) {
+    } if (questionNumber === 2 || questionNumber === 3) {
       setTypeSecond(typeSecond + record);
-    } else if (questionNumber >= 4) {
+    } if (questionNumber >= 4) {
       setTypeThird(typeThird + record);
 
       if (questionNumber === 5) {
@@ -154,14 +154,14 @@ const QuizPage = ({ welcome }) => {
         </Wrapper>
       </>
     );
-  }else if (finalType === 7) {
+  } if (finalType === 7) {
     return(
         <div>
             <NavLink to={linkTo}></NavLink>
         </div>
     )
   }
-   else if (questionNumber < 6 && finalType !== 7) {
+   if (questionNumber < 6 && finalType !== 7) {
     return (
       <>
         <Wrapper welcome={welcome}>
