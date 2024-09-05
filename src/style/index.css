@@ -1,0 +1,61 @@
+/*
+@font-face {
+  font-family: "Spoqa-Han-Sans";
+  src: url("./fonts/Spoqa\ Han\ Sans\ Neo\ Light.otf") format("opentype");
+  font-style: normal;
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "Spoqa-Han-Sans";
+  src: url("./fonts/Spoqa\ Han\ Sans\ Neo\ Regular.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Spoqa-Han-Sans";
+  src: url("./fonts/Spoqa\ Han\ Sans\ Neo\ Bold.otf") format("opentype");
+  font-style: normal;
+  font-weight: 700;
+}
+
+*/
+
+@font-face {
+  font-family: "Jalnan";
+  src: url("./fonts/JalnanOTF.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Oswald";
+  src: url("./fonts/Oswald-VariableFont_wght.ttf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Reko";
+  src: url("./fonts/RECIPEKOREA\ 레코체\ FONT.TTF") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+html {
+  font-size: 10px;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f6f6f6;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
