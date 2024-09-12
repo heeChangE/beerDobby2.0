@@ -65,7 +65,7 @@ const Text = styled.div`
 `;
 
 /** QuizPage Function */
-const QuizPage = ({ welcome }) => {
+function QuizPage ({ welcome }) {
   const [questionNumber, setQuestionNumber] = useState(0);
   const [loading, setLoading] = useState(false);
   const [process, setProcess] = useState(false);
@@ -84,7 +84,7 @@ const QuizPage = ({ welcome }) => {
    * 16번과 같아지면 중간에 멈춤.
    */
 
-  const onConditionChange = (key) => {
+  function onConditionChange(key) {
     let record =
       contents[questionNumber].weight *
       contents[questionNumber].answers[key].score;
