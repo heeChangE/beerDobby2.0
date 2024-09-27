@@ -76,10 +76,8 @@ const ResultSquare = styled.div`
     word-break: keep-all;
 
     ${(props) =>
-      props.isNormal < 8
-        ? `transform: translateX(-50%);
-        bottom : 5rem;`
-        : `top: 50%
+      props.isNormal < 8 ? `transform: translateX(-50%);
+        bottom : 5rem;` : `top: 50%
         transform: translate(-50%, -50%);`};
   }
 `;

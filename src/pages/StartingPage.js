@@ -75,7 +75,7 @@ const StartingPage = () => {
             text={"시작하기"}
             onclick={onClickStartBtn}
           />
-          <Footer>made by heeChang</Footer>
+          <Footer>made by heeChang <br></br> with jiHwan</Footer>
         </Container>
       </Wrapper>
       <QuizPage welcome={quizTime} />

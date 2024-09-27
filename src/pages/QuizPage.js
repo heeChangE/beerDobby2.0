@@ -83,7 +83,6 @@ function QuizPage ({ welcome }) {
    *
    * 16번과 같아지면 중간에 멈춤.
    */
-
   function onConditionChange(key) {
     let record =
       contents[questionNumber].weight *
