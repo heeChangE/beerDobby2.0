@@ -21,9 +21,9 @@ const Button = styled.div`
   border: 1.5px solid #F3CF98;
 `;
 
-const ButtonComponent = ({ idx, type, text, onclick }) => {
+const ButtonComponent = ({ idx, type, text, onClick }) => {
   const onClickBtn = () => {
-    onclick(idx);
+    onClick(idx);
   };
 
   return (

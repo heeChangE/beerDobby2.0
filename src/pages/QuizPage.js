@@ -6,6 +6,7 @@ import ButtonComponent from "../compontents/ButtonComponent";
 import ProgressBar from "../compontents/progressBar";
 import Parser from "html-react-parser";
 import { Link, NavLink } from "react-router-dom";
+import { type } from "@testing-library/user-event/dist/type";
 
 const Wrapper = styled.div`
   display: ${(props) => (props.welcome === true ? "flex" : "none")};
@@ -71,9 +72,10 @@ function QuizPage ({ welcome }) {
   const [process, setProcess] = useState(false);
   const [linkTo, setLinkTo] = useState("");
   const linkResult = "/result/";
-  const [typeFirst, setTypeFirst] = useState(0);
-  const [typeSecond, setTypeSecond] = useState(0);
-  const [typeThird, setTypeThird] = useState(0);
+  // const [typeFirst, setTypeFirst] = useState(0);
+  // const [typeSecond, setTypeSecond] = useState(0);
+  // const [typeThird, setTypeThird] = useState(0);
+  const [types, setTypes] = useState({ first: 0, second: 0, third: 0 });
   const [finalType, setFinalType] = useState(0);
 
   /**
@@ -83,39 +85,65 @@ function QuizPage ({ welcome }) {
    *
    * 16번과 같아지면 중간에 멈춤.
    */
-  function onConditionChange(key) {
-    let record =
-      contents[questionNumber].weight *
-      contents[questionNumber].answers[key].score;
-
+  function onConditionChange(key, score) {
+    const record = contents[questionNumber].weight * score;
+      
     if (questionNumber === 0 || questionNumber === 1) {
-      setTypeFirst(typeFirst + record);
+      setTypes(prev => ({...prev, first: prev.first + record }));
+      console.log(types.first)
     } if (questionNumber === 2 || questionNumber === 3) {
-      setTypeSecond(typeSecond + record);
+      setTypes(prev => ({...prev, second: prev.second + record }));
+      console.log(types.second)
     } if (questionNumber >= 4) {
-      setTypeThird(typeThird + record);
+      setTypes(prev => ({...prev, third: prev.third + record }));
+      console.log(types.third)
 
+      // if (questionNumber >= 1) {
+      //   setTypes(prev => ({...prev, first: prev.first + record }));
+      //   console.log(types.first)
+      // }
+      // if (questionNumber >= 3) {
+      //   setTypes(prev => ({...prev, second: prev.second + record }));
+      //   console.log(types.second)
+      // }
+      // if (questionNumber >= 4) {
+      //   setTypes(prev => ({...prev, third: prev.third + record }));
+      //   console.log(types.third)
+      
       if (questionNumber === 5) {
+
+        // let result = 0
+        // if (types.first >= 5) {
+        //   result = result + 4;
+        // }
+        // if (types.second >= 5 ? 2 : 0) {
+        //   result = result + 2;
+        // }
+        // if (types.third + record >= 5) {
+        //   result = result + 1;
+        // } else {
+        //   result = result + 0;
+        // }
+        
         let result = 0;
 
-        if (typeFirst >= 5) {
+        if (types.first >= 5) {
           result = result + 4;
         }
-        if (typeSecond >= 5) {
+        if (types.second >= 5) {
           result = result + 2;
         }
-        if (typeThird + record >= 5) {
+        if (types.third + record >= 5) {
           result = result + 1;
         } else {
           result = result + 0;
         }
 
-        let num = result;
-        setFinalType(num);
-        setLinkTo(linkResult + num);
+        setFinalType(result);
+        setLinkTo(linkResult + result);
 
         setLoading(true);
-        setTimeout(function () {
+        setTimeout(() => {
           setLoading(false);
           setProcess(true);
         }, 2500);
@@ -168,12 +196,12 @@ function QuizPage ({ welcome }) {
 
           <Container>
             <Text>{Parser(contents[questionNumber].question)}</Text>
-            {contents[questionNumber].answers.map((answer, i) => (
+            {contents[questionNumber].answers.map(( answer, i ) => (
               <ButtonComponent
-                key={"answer - " + i}
+                key={i}
                 idx={i}
                 text={Parser(answer.text)}
-                onclick={onConditionChange}
+                onClick={() =>  onConditionChange(i, answer.score)}
               />
             ))}
           </Container>
