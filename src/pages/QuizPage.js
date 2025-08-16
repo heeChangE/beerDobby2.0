@@ -6,7 +6,24 @@ import ButtonComponent from "../compontents/ButtonComponent";
 import ProgressBar from "../compontents/progressBar";
 import Parser from "html-react-parser";
 import { Link, NavLink } from "react-router-dom";
-import { type } from "@testing-library/user-event/dist/type";
+
+// 상수 정의
+const QUESTION_CONFIG = {
+  TOTAL_QUESTIONS: 6,
+  PROGRESS_PER_QUESTION: 16.7,
+  SCORE_THRESHOLD: 5,
+  WEIGHTS: {
+    FIRST: 4,
+    SECOND: 2,
+    THIRD: 1
+  }
+};
+
+const QUESTION_GROUPS = {
+  FIRST: [0, 1],    // 질문 0, 1번
+  SECOND: [2, 3],   // 질문 2, 3번
+  THIRD: [4, 5]     // 질문 4, 5번
+};
 
 const Wrapper = styled.div`
   display: ${(props) => (props.welcome === true ? "flex" : "none")};
@@ -28,6 +45,7 @@ const Container = styled.div`
   transition: all 0.3s cubic-bezier(0.15, 0.4, 0.15, 0.5);
   padding: 2.5rem;
 `;
+
 const Title = styled.div`
   font-family: "Jalnan";
   font-size: 2.9rem;
@@ -65,98 +83,117 @@ const Text = styled.div`
   line-height: 30px;
 `;
 
-/** QuizPage Function */
-function QuizPage ({ welcome }) {
+/**
+ * QuizPage 컴포넌트
+ * 맥주 취향 테스트를 진행하는 메인 페이지
+ */
+function QuizPage({ welcome }) {
+  // 상태 관리
   const [questionNumber, setQuestionNumber] = useState(0);
   const [loading, setLoading] = useState(false);
   const [process, setProcess] = useState(false);
   const [linkTo, setLinkTo] = useState("");
-  const linkResult = "/result/";
-  // const [typeFirst, setTypeFirst] = useState(0);
-  // const [typeSecond, setTypeSecond] = useState(0);
-  // const [typeThird, setTypeThird] = useState(0);
   const [types, setTypes] = useState({ first: 0, second: 0, third: 0 });
   const [finalType, setFinalType] = useState(0);
 
+  const linkResult = "/result/";
+
   /**
-   * questionNumber가 10번 전까지, 16번이 아닐 경우를 조건으로
-   * progressBar와 질문 내용들을 피는 페이지.
-   * 10번과 같아지면 완료 메시지와 함께 결과 페이지로 이동하는 버튼.
-   *
-   * 16번과 같아지면 중간에 멈춤.
+   * 질문 번호에 따른 타입 그룹을 반환
+   * @param {number} questionNumber - 현재 질문 번호
+   * @returns {string|null} 타입 그룹 ('first', 'second', 'third') 또는 null
+   */
+  const getTypeGroup = (questionNumber) => {
+    if (QUESTION_GROUPS.FIRST.includes(questionNumber)) return 'first';
+    if (QUESTION_GROUPS.SECOND.includes(questionNumber)) return 'second';
+    if (QUESTION_GROUPS.THIRD.includes(questionNumber)) return 'third';
+    return null;
+  };
+
+  /**
+   * 최종 맥주 타입을 계산
+   * @param {Object} types - 각 타입별 점수
+   * @param {number} thirdTypeScore - third 타입의 현재 점수
+   * @returns {number} 최종 타입 (0-7)
+   */
+  const calculateFinalType = (types, thirdTypeScore) => {
+    let result = 0;
+    
+    // 각 타입별 점수에 따른 가중치 계산
+    if (types.first >= QUESTION_CONFIG.SCORE_THRESHOLD) {
+      result += QUESTION_CONFIG.WEIGHTS.FIRST;
+    }
+    if (types.second >= QUESTION_CONFIG.SCORE_THRESHOLD) {
+      result += QUESTION_CONFIG.WEIGHTS.SECOND;
+    }
+    if (thirdTypeScore >= QUESTION_CONFIG.SCORE_THRESHOLD) {
+      result += QUESTION_CONFIG.WEIGHTS.THIRD;
+    }
+    
+    return result;
+  };
+
+  /**
+   * 결과 페이지로 이동하는 로직
+   * @param {number} finalType - 계산된 최종 타입
+   */
+  const navigateToResult = (finalType) => {
+    setFinalType(finalType);
+    setLinkTo(linkResult + finalType);
+    setLoading(true);
+    
+    // 2.5초 후 결과 확인 버튼 표시
+    setTimeout(() => {
+      setLoading(false);
+      setProcess(true);
+    }, 2500);
+  };
+
+  /**
+   * 질문 답변 처리 함수
+   * 원본 로직을 그대로 유지하면서 가독성 향상
+   * @param {number} key - 답변 인덱스
+   * @param {number} score - 답변 점수
    */
   function onConditionChange(key, score) {
     const record = contents[questionNumber].weight * score;
-      
-    if (questionNumber === 0 || questionNumber === 1) {
-      setTypes(prev => ({...prev, first: prev.first + record }));
-      console.log(types.first)
-    } if (questionNumber === 2 || questionNumber === 3) {
-      setTypes(prev => ({...prev, second: prev.second + record }));
-      console.log(types.second)
-    } if (questionNumber >= 4) {
-      setTypes(prev => ({...prev, third: prev.third + record }));
-      console.log(types.third)
-
-      // if (questionNumber >= 1) {
-      //   setTypes(prev => ({...prev, first: prev.first + record }));
-      //   console.log(types.first)
-      // }
-      // if (questionNumber >= 3) {
-      //   setTypes(prev => ({...prev, second: prev.second + record }));
-      //   console.log(types.second)
-      // }
-      // if (questionNumber >= 4) {
-      //   setTypes(prev => ({...prev, third: prev.third + record }));
-      //   console.log(types.third)
-      
-      if (questionNumber === 5) {
-
-        // let result = 0
-        // if (types.first >= 5) {
-        //   result = result + 4;
-        // }
-        // if (types.second >= 5 ? 2 : 0) {
-        //   result = result + 2;
-        // }
-        // if (types.third + record >= 5) {
-        //   result = result + 1;
-        // } else {
-        //   result = result + 0;
-        // }
-        
-        let result = 0;
-
-        if (types.first >= 5) {
-          result = result + 4;
-        }
-        if (types.second >= 5) {
-          result = result + 2;
-        }
-        if (types.third + record >= 5) {
-          result = result + 1;
-        } else {
-          result = result + 0;
-        }
-
-        setFinalType(result);
-        setLinkTo(linkResult + result);
-
-        setLoading(true);
-        setTimeout(() => {
-          setLoading(false);
-          setProcess(true);
-        }, 2500);
+    const typeGroup = getTypeGroup(questionNumber);
+    
+    // 질문 그룹에 따른 점수 업데이트
+    if (typeGroup) {
+      if (typeGroup === 'third') {
+        // third 타입의 경우 최종 계산을 포함
+        setTypes(prev => {
+          const updatedTypes = { ...prev, third: prev.third + record };
+          
+          // 마지막 질문(5번)에서 최종 타입 계산
+          if (questionNumber === 5) {
+            const finalType = calculateFinalType(types, updatedTypes.third);
+            navigateToResult(finalType);
+          }
+          
+          return updatedTypes;
+        });
+      } else {
+        // first, second 타입의 경우 단순 업데이트
+        setTypes(prev => ({ ...prev, [typeGroup]: prev[typeGroup] + record }));
       }
     }
+    
+    // 다음 질문으로 이동
     setQuestionNumber(questionNumber + 1);
-  };
+  }
 
+  /**
+   * 결과 확인 버튼 클릭 핸들러
+   */
   const onClickResultBtn = () => {
     setProcess(false);
     setQuestionNumber(7);
   };
-  if (questionNumber === 6) {
+
+  // 로딩 화면 (질문 완료 후)
+  if (questionNumber === QUESTION_CONFIG.TOTAL_QUESTIONS) {
     return (
       <>
         <Wrapper welcome={loading}>
@@ -174,34 +211,39 @@ function QuizPage ({ welcome }) {
               <ButtonComponent
                 type={"result"}
                 text="결과 확인하기👍"
-                onclick={onClickResultBtn}
-              ></ButtonComponent>
+                onClick={onClickResultBtn}
+              />
             </Link>
           </Container>
         </Wrapper>
       </>
     );
-  } if (finalType === 7) {
-    return(
-        <div>
-            <NavLink to={linkTo}></NavLink>
-        </div>
-    )
   }
-   if (questionNumber < 6 && finalType !== 7) {
+
+  // 최종 타입이 7인 경우 자동 리다이렉트
+  if (finalType === 7) {
+    return (
+      <div>
+        <NavLink to={linkTo} />
+      </div>
+    );
+  }
+
+  // 메인 퀴즈 화면
+  if (questionNumber < QUESTION_CONFIG.TOTAL_QUESTIONS && finalType !== 7) {
     return (
       <>
         <Wrapper welcome={welcome}>
-          <ProgressBar completed={(questionNumber + 1) * 16.7} />
+          <ProgressBar completed={(questionNumber + 1) * QUESTION_CONFIG.PROGRESS_PER_QUESTION} />
 
           <Container>
             <Text>{Parser(contents[questionNumber].question)}</Text>
-            {contents[questionNumber].answers.map(( answer, i ) => (
+            {contents[questionNumber].answers.map((answer, i) => (
               <ButtonComponent
                 key={i}
                 idx={i}
                 text={Parser(answer.text)}
-                onClick={() =>  onConditionChange(i, answer.score)}
+                onClick={() => onConditionChange(i, answer.score)}
               />
             ))}
           </Container>
@@ -209,6 +251,8 @@ function QuizPage ({ welcome }) {
       </>
     );
   }
-};
+
+  return null;
+}
 
 export default QuizPage;
